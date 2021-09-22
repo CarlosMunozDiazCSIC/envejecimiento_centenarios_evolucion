@@ -18,16 +18,18 @@ let dataSource = 'https://raw.githubusercontent.com/EnvejecimientoEnRed/envejeci
 let tooltip = d3.select('#tooltip');
 
 //Variables para visualización
-let innerData = [], chartBlock = d3.select('#chart'), chart, x_c, x_cAxis, y_c, y_cAxis;
-let line, regressionGenerator, path_1, length_1, path_2, length_2;
+let innerData = [], currentData =  [], chartBlock = d3.select('#chart'), chart, x_c, x_cAxis, y_c, y_cAxis;
+let line, path_1, length_1;
 
 initChart();
 
 function initChart() {
+    let csv = d3.dsvFormat(';');
+
     d3.csv(dataSource, function (error, data) {
         if (error) throw error;
-
-        innerData = data.slice(10,); //Nos quedamos con los datos a partir de 1990
+        innerData = csv.parse(data);
+        console.log(innerData);
 
         //Desarrollo del gráfico > Debemos hacer muchas variables genéricas para luego actualizar el gráfico
         let margin = {top: 5, right: 22.5, bottom: 25, left: 24.5};
@@ -164,6 +166,10 @@ function initChart() {
     });
 }
 
+function updateChart(tipo) {
+    console.log(tipo);
+}
+
 function animateChart() {
     //Opción de tener dos líneas
     path_1 = chart.select(".line-chart")
@@ -235,6 +241,24 @@ function animateChart() {
 document.getElementById('replay').addEventListener('click', function() {
     animateChart();
 });
+
+
+///// BOTONES PARA CAMBIO DE TIPO DE DATO /////
+let optionBtn = document.getElementsByClassName('btn__option');
+
+for(let i = 0; i < optionBtn.length; i++) {
+    optionBtn[i].addEventListener('click', function() {
+        //Cambiamos la clase activa
+        for(let i = 0; i < optionBtn.length; i++) {
+            optionBtn[i].classList.remove('active');
+        }
+
+        this.classList.add('active');
+
+        //Actualizamos el gráfico
+        updateChart(this.getAttribute('data-type'));
+    });
+}
 
 ///// REDES SOCIALES /////
 setRRSSLinks();
